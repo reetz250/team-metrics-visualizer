@@ -194,7 +194,9 @@ class OvertimeChartController(VisualController):
         traces = [
             go.Box(
                 x=[
-                    fix_timedelta_plot(i if i > timedelta(0) else timedelta(0))
+                    fix_timedelta_plot(
+                        i if i > timedelta(0) else timedelta(0), selected_start_period
+                    )
                     for i in row["ot_per_day"]
                 ],
                 name=row["label"],
@@ -202,6 +204,16 @@ class OvertimeChartController(VisualController):
             )
             for i, row in data.iterrows()
         ]
+
+        # appending a starting point to always show the 00:00 time on the x axis
+        traces.append(
+            go.Box(
+                x=[f"{selected_start_period} 00:00:00"],
+                name="",
+                marker_color="rgba(0,0,0,0)",
+                hoverinfo="none",
+            )
+        )
 
         # Set title & layout of barchart
         selected_start_period_readable = selected_start_period.strftime(

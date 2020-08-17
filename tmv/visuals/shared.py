@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def fix_timedelta_plot(timedelta_df):
+def fix_timedelta_plot(timedelta_df, active_date="1970/1/1"):
     """
     Fix the display of timedelta-values in a plotly-plot.
 
@@ -13,4 +13,4 @@ def fix_timedelta_plot(timedelta_df):
     Ref.: https://community.plot.ly/t/timeseries-plot-with-timedelta-axis/23560
     and: https://github.com/plotly/plotly.py/issues/801#issuecomment-317174985
     """
-    return timedelta_df + pd.to_datetime("1970/1/1")
+    return timedelta_df + pd.to_datetime(active_date)
