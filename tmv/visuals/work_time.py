@@ -102,7 +102,7 @@ class OvertimeChartController(VisualController):
             filter_teams = True
         else:
             filter_teams = Team.team_id.in_(selected_teams)
-
+            print(filter_teams)
         # Load overtime-data from database
         query = (
             db.session.query(
@@ -125,7 +125,7 @@ class OvertimeChartController(VisualController):
             )
         )
 
-        result = pd.read_sql(
+        result = pd.read_sql_query(
             query.statement, db.session.bind, parse_dates=["measurement_date"],
         )
 
@@ -212,22 +212,22 @@ class OvertimeChartController(VisualController):
         ]
 
         # adding two extra points to traces to display the graph correctly
-        margin_box = go.Box(
+        first_trace = go.Box(
             x=[f"{selected_start_period} 00:00:00"],
             name="",
             marker_color="rgba(0, 0, 0, 0)",
             hoverinfo="none",
         )
 
-        margin_box2 = go.Box(
+        last_trace = go.Box(
             x=[f"{selected_start_period} 00:00:00"],
             name=" ",
             marker_color="rgba(0, 0, 0, 0)",
             hoverinfo="none",
         )
 
-        traces.insert(0, margin_box)
-        traces.append(margin_box2)
+        traces.insert(0, first_trace)
+        traces.append(last_trace)
 
         # Create readable title for the chart
         selected_start_period_readable = selected_start_period.strftime(
@@ -244,7 +244,7 @@ class OvertimeChartController(VisualController):
 
         layout = go.Layout(
             autosize=True,
-            margin=dict(t=70, l=0, r=10, b=30),
+            margin=dict(t=70, l=0, r=30, b=30),
             legend_orientation="h",
             font=dict(size=12),
             bargap=0.2,
