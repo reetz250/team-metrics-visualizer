@@ -102,7 +102,7 @@ class OvertimeChartController(VisualController):
             filter_teams = True
         else:
             filter_teams = Team.team_id.in_(selected_teams)
-            print(filter_teams)
+
         # Load overtime-data from database
         query = (
             db.session.query(
