@@ -125,7 +125,7 @@ class OvertimeChartController(VisualController):
             )
         )
 
-        result = pd.read_sql(
+        result = pd.read_sql_query(
             query.statement, db.session.bind, parse_dates=["measurement_date"],
         )
 
@@ -200,7 +200,8 @@ class OvertimeChartController(VisualController):
             go.Box(
                 x=[
                     fix_timedelta_plot(
-                        ot_per_day if ot_per_day > timedelta(0) else timedelta(0)
+                        ot_per_day if ot_per_day > timedelta(0) else timedelta(0),
+                        selected_start_period,
                     )
                     for ot_per_day in row["ot_per_day"]
                 ],
@@ -209,6 +210,24 @@ class OvertimeChartController(VisualController):
             )
             for _, row in data.iterrows()
         ]
+
+        # adding two extra points to traces to display the graph correctly
+        first_trace = go.Box(
+            x=[f"{selected_start_period} 00:00:00"],
+            name="",
+            marker_color="rgba(0, 0, 0, 0)",
+            hoverinfo="none",
+        )
+
+        last_trace = go.Box(
+            x=[f"{selected_start_period} 00:00:00"],
+            name=" ",
+            marker_color="rgba(0, 0, 0, 0)",
+            hoverinfo="none",
+        )
+
+        traces.insert(0, first_trace)
+        traces.append(last_trace)
 
         # Create readable title for the chart
         selected_start_period_readable = selected_start_period.strftime(
@@ -225,7 +244,7 @@ class OvertimeChartController(VisualController):
 
         layout = go.Layout(
             autosize=True,
-            margin=dict(t=70, l=30, r=30, b=30),
+            margin=dict(t=70, l=0, r=30, b=30),
             legend_orientation="h",
             font=dict(size=12),
             bargap=0.2,
