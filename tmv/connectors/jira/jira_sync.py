@@ -51,7 +51,7 @@ class JiraSync:
             )
             raise ImproperlyConfiguredError(
                 f"Unable to find JIRA field mapping for `{name}`"
-            )
+            ) from KeyError
 
     def _get_fields(self, extra: Optional[List[str]] = None) -> List[str]:
         """
@@ -136,8 +136,8 @@ class JiraSync:
         # get data for all dates
         until_date = sprint.complete_date or sprint.end_date
         time_now = time_now.replace(tzinfo=None)
-        if until_date > time_now:
-            until_date = time_now
+        until_date = min(until_date, time_now)
+
         # inclusive count
         sprint_days_cnt = (until_date.date() - sprint.start_date.date()).days + 1
         index = list(

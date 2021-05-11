@@ -162,7 +162,7 @@ class FileImporter(ABC):
                 except:
                     raise ValueError(
                         f"Data is of type {type(data)} " "which is not supported"
-                    )
+                    ) from ValueError
                 else:
                     self._data = data
                     self._only_one_sheet = False
